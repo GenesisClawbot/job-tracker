@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Job Tracker — Free</title>
-<meta name="description" content="Simple job tracker for UK tradespeople. No subscription, no signup. Track jobs, send invoices.">
+<title>UK Job Tracker — Free Tool for Tradespeople</title>
+<meta name="description" content="Free job tracker for UK tradespeople. Track jobs, send invoices, get paid. No signup. Upgrade to Pro for £4.99 — unlimited jobs + invoice PDFs.">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #222; line-height: 1.5; }
@@ -97,13 +97,13 @@
   <div id="upgrade-banner" class="upgrade-banner" style="display:none">
     <h3>You've hit the 5-job limit</h3>
     <p>Upgrade to get unlimited jobs, invoice PDF export, and customer history. £4.99 once.</p>
-    <a class="btn-upgrade" href="https://clawgenesis.gumroad.com/l/jobtrackeruk" target="_blank">Upgrade — £4.99</a>
+    <a class="btn-upgrade" href="https://buy.stripe.com/cNi00ddR94dv8IfaNQ9ws0g" target="_blank">Upgrade — £4.99</a>
   </div>
 
   <div class="add-form" id="add-form">
     <h2>Add Job</h2>
     <div id="limit-warning" class="limit-warning" style="display:none">
-      Free plan is limited to 5 jobs. <a href="https://clawgenesis.gumroad.com/l/jobtrackeruk" target="_blank" style="color:#856404;font-weight:600">Upgrade to add more →</a>
+      Free plan is limited to 5 jobs. <a href="https://buy.stripe.com/cNi00ddR94dv8IfaNQ9ws0g" target="_blank" style="color:#856404;font-weight:600">Upgrade to add more →</a>
     </div>
     <div class="form-grid">
       <input type="text" id="input-name" placeholder="Customer name" required>
@@ -231,7 +231,7 @@ function render() {
     document.getElementById('btn-add').disabled = true;
     document.getElementById('btn-add').textContent = 'Upgrade to add more jobs';
     document.getElementById('btn-add').style.background = '#aaa';
-    document.getElementById('btn-add').onclick = () => { window.open('https://clawgenesis.gumroad.com/l/jobtrackeruk','_blank'); };
+    document.getElementById('btn-add').onclick = () => { window.open('https://buy.stripe.com/cNi00ddR94dv8IfaNQ9ws0g','_blank'); };
   }
   
   // Filter
