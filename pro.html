@@ -1,451 +1,434 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Job Tracker — Pro</title>
-<meta name="description" content="Simple job tracker for UK tradespeople. Unlimited jobs, invoice printing, no subscription.">
+<title>UK Job Tracker Pro — Unlimited Job Application Tracker</title>
+<meta name="description" content="Pro job application tracker for UK job seekers. Unlimited applications, interview prep, salary negotiation tracking, CSV export. Runs in your browser.">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #222; line-height: 1.5; }
-  
-  .header { background: #1a1a2e; color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
-  .header h1 { font-size: 1.2rem; font-weight: 600; }
-  .header .badge { background: #06d6a0; color: #014030; font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; font-weight: 700; }
-  
-  .container { max-width: 760px; margin: 0 auto; padding: 20px; }
-  
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-  .stat { background: white; border-radius: 8px; padding: 14px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-  .stat .value { font-size: 1.4rem; font-weight: 700; color: #1a1a2e; }
-  .stat .label { font-size: 0.75rem; color: #888; margin-top: 2px; }
-  
-  .tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 0; }
-  .main-tab { padding: 10px 18px; font-size: 0.9rem; cursor: pointer; border-bottom: 2px solid transparent; color: #666; font-weight: 500; }
-  .main-tab.active { color: #1a1a2e; border-bottom-color: #1a1a2e; }
-  
-  .panel { display: none; }
-  .panel.active { display: block; }
-  
-  /* Settings panel */
-  .settings-section { background: white; border-radius: 8px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-  .settings-section h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 14px; }
-  .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .settings-grid .full { grid-column: 1/-1; }
-  label { font-size: 0.82rem; color: #555; display: block; margin-bottom: 4px; }
-  
-  /* Jobs panel */
-  .add-form { background: white; border-radius: 8px; padding: 16px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-  .add-form h2 { font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; color: #444; text-transform: uppercase; letter-spacing: 0.05em; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .form-grid .full { grid-column: 1/-1; }
-  input[type=text], input[type=number], input[type=date], input[type=email], input[type=tel], textarea, select { width: 100%; padding: 9px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; font-family: inherit; }
-  input:focus, textarea:focus, select:focus { outline: none; border-color: #1a1a2e; }
-  textarea { resize: vertical; min-height: 60px; }
-  .btn { padding: 10px 20px; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background 0.15s; }
-  .btn-primary { background: #1a1a2e; color: white; width: 100%; margin-top: 10px; }
-  .btn-primary:hover { background: #2d2d4e; }
-  
-  .jobs-list { }
-  .jobs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
-  .jobs-header h2 { font-size: 0.9rem; font-weight: 600; color: #444; text-transform: uppercase; letter-spacing: 0.05em; }
-  .filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
-  .tab { padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; border: 1px solid #ddd; background: white; color: #666; }
-  .tab.active { background: #1a1a2e; color: white; border-color: #1a1a2e; }
-  
-  .job-card { background: white; border-radius: 8px; padding: 16px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-left: 4px solid #ddd; }
-  .job-card.done { border-left-color: #2a9d8f; }
-  .job-card.invoiced { border-left-color: #e9c46a; }
-  .job-card.paid { border-left-color: #06d6a0; opacity: 0.8; }
-  .job-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-  .job-name { font-weight: 600; font-size: 1rem; }
-  .job-price { font-weight: 700; font-size: 1.1rem; color: #1a1a2e; }
-  .job-meta { font-size: 0.82rem; color: #888; margin-bottom: 10px; }
-  .job-desc { font-size: 0.88rem; color: #555; margin-bottom: 12px; }
-  .job-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-  .btn-sm { padding: 5px 12px; font-size: 0.78rem; border-radius: 5px; border: 1px solid; cursor: pointer; background: white; font-weight: 500; }
-  .btn-done { border-color: #2a9d8f; color: #2a9d8f; }
-  .btn-invoice { border-color: #e9c46a; color: #b8860b; }
-  .btn-paid { border-color: #06d6a0; color: #028a62; }
-  .btn-delete { border-color: #e63946; color: #e63946; margin-left: auto; }
-  .btn-print { border-color: #457b9d; color: #457b9d; }
-  .btn-sm:hover { opacity: 0.75; }
-  .status-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
-  .badge-pending { background: #f0f0f0; color: #888; }
-  .badge-done { background: #d4f1ed; color: #2a9d8f; }
-  .badge-invoiced { background: #fdf4cc; color: #b8860b; }
-  .badge-paid { background: #d0f8ec; color: #028a62; }
-  
-  .empty { text-align: center; padding: 40px 20px; color: #aaa; }
-  .empty .icon { font-size: 2.5rem; margin-bottom: 10px; }
-  
-  /* Invoice modal */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
-  .modal-overlay.show { display: flex; }
-  .modal { background: white; border-radius: 8px; max-width: 640px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 28px; }
-  
-  /* Invoice print styles */
-  .invoice { font-family: serif; }
-  .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; padding-bottom: 16px; border-bottom: 2px solid #222; }
-  .invoice-from h2 { font-size: 1.3rem; margin-bottom: 4px; }
-  .invoice-from p { font-size: 0.85rem; color: #555; }
-  .invoice-meta { text-align: right; }
-  .invoice-meta .inv-num { font-size: 1.5rem; font-weight: 700; color: #1a1a2e; }
-  .invoice-meta .inv-date { font-size: 0.85rem; color: #888; margin-top: 4px; }
-  .invoice-to { margin-bottom: 24px; }
-  .invoice-to h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: #888; margin-bottom: 6px; }
-  .invoice-to p { font-size: 0.95rem; }
-  .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-  .invoice-table th { text-align: left; padding: 8px 12px; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; color: #888; border-bottom: 1px solid #eee; }
-  .invoice-table td { padding: 10px 12px; font-size: 0.9rem; border-bottom: 1px solid #f5f5f5; }
-  .invoice-table .price { text-align: right; }
-  .invoice-total { text-align: right; margin-bottom: 24px; }
-  .invoice-total .total-line { font-size: 1.1rem; font-weight: 700; }
-  .invoice-notes { font-size: 0.85rem; color: #666; padding-top: 16px; border-top: 1px solid #eee; }
-  
-  .modal-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
-  
-  @media print {
-    body > *:not(.modal-overlay) { display: none !important; }
-    .modal-overlay { display: flex !important; position: static; background: none; padding: 0; }
-    .modal { box-shadow: none; max-height: none; }
-    .modal-actions { display: none !important; }
-  }
-  
-  @media (max-width: 600px) {
-    .stats { grid-template-columns: 1fr 1fr; }
-    .form-grid { grid-template-columns: 1fr; }
-    .form-grid .full { grid-column: 1; }
-    .settings-grid { grid-template-columns: 1fr; }
-    .settings-grid .full { grid-column: 1; }
-  }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f4f8;color:#1a1a2e;line-height:1.5;min-height:100vh}
+
+/* Header */
+.header{background:linear-gradient(135deg,#0f3460,#16213e);color:white;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+.header-left{display:flex;align-items:center;gap:10px}
+.header h1{font-size:1.1rem;font-weight:700}
+.header-badge{background:#06d6a0;color:#003430;font-size:0.65rem;padding:2px 8px;border-radius:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em}
+.btn-export{background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);padding:7px 16px;border-radius:6px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:background 0.15s}
+.btn-export:hover{background:rgba(255,255,255,0.25)}
+
+/* Container */
+.container{max-width:900px;margin:0 auto;padding:20px 16px}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px}
+.stat{background:white;border-radius:10px;padding:12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.stat .val{font-size:1.5rem;font-weight:800;color:#0f3460}
+.stat .lbl{font-size:0.68rem;color:#888;margin-top:2px;text-transform:uppercase;letter-spacing:0.04em}
+
+/* Add form */
+.add-form{background:white;border-radius:10px;padding:18px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.add-form h2{font-size:0.82rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-grid .full{grid-column:1/-1}
+.form-grid .third{grid-column:span 1}
+label{display:block;font-size:0.78rem;color:#555;font-weight:600;margin-bottom:3px}
+input,select,textarea{width:100%;padding:8px 12px;border:1.5px solid #e0e0e0;border-radius:7px;font-size:0.87rem;font-family:inherit;color:#1a1a2e;background:white;transition:border-color 0.15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#0f3460}
+textarea{resize:vertical;min-height:52px}
+.btn-add{background:#0f3460;color:white;border:none;padding:10px 24px;border-radius:7px;font-size:0.9rem;font-weight:700;cursor:pointer;width:100%;margin-top:8px;transition:background 0.15s}
+.btn-add:hover{background:#16213e}
+
+/* Filter tabs */
+.list-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.list-header h2{font-size:0.82rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{padding:5px 13px;border-radius:20px;font-size:0.78rem;cursor:pointer;border:1.5px solid #ddd;background:white;color:#666;font-weight:600;transition:all 0.15s}
+.tab.active{background:#0f3460;color:white;border-color:#0f3460}
+
+/* Application cards */
+.app-card{background:white;border-radius:10px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);border-left:4px solid #ddd;overflow:hidden;transition:box-shadow 0.15s}
+.app-card:hover{box-shadow:0 3px 10px rgba(0,0,0,0.12)}
+.app-card.status-applied{border-left-color:#4361ee}
+.app-card.status-phone_screen{border-left-color:#7209b7}
+.app-card.status-interview{border-left-color:#f77f00}
+.app-card.status-assessment{border-left-color:#f4a261}
+.app-card.status-offer{border-left-color:#06d6a0}
+.app-card.status-rejected{border-left-color:#e63946;opacity:0.75}
+.app-card.status-withdrawn{border-left-color:#adb5bd;opacity:0.65}
+
+.card-main{padding:16px}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.card-role{font-weight:700;font-size:1rem}
+.card-company{font-size:0.9rem;color:#555;margin-bottom:4px}
+.card-meta{display:flex;gap:12px;font-size:0.77rem;color:#999;flex-wrap:wrap;margin-bottom:10px}
+.card-meta span{display:flex;align-items:center;gap:3px}
+.card-contact{font-size:0.8rem;color:#555;margin-bottom:8px;display:flex;gap:12px;flex-wrap:wrap}
+.card-contact a{color:#0f3460;text-decoration:none}
+.card-contact a:hover{text-decoration:underline}
+.card-notes{font-size:0.82rem;color:#555;margin-bottom:10px;padding:8px 10px;background:#f8f9fa;border-radius:5px;border-left:3px solid #dee2e6}
+.card-notes:empty{display:none}
+
+/* Salary negotiation */
+.salary-track{background:#f0f9f6;border-radius:7px;padding:10px 12px;margin-bottom:10px;font-size:0.82rem}
+.salary-track h4{font-size:0.75rem;font-weight:700;color:#0f3460;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px}
+.salary-row{display:flex;gap:10px;flex-wrap:wrap}
+.salary-input-group{flex:1;min-width:120px}
+.salary-input-group label{font-size:0.72rem;color:#555;margin-bottom:2px}
+
+/* Interview prep */
+.interview-prep{background:#f8f4ff;border-radius:7px;padding:10px 12px;margin-bottom:10px;font-size:0.82rem}
+.interview-prep h4{font-size:0.75rem;font-weight:700;color:#7209b7;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.interview-prep h4 .toggle-icon{font-size:0.9rem;transition:transform 0.2s}
+.interview-prep.collapsed .toggle-icon{transform:rotate(-90deg)}
+.interview-prep.collapsed .prep-body{display:none}
+.prep-body{display:block}
+.prep-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
+.prep-row .full{grid-column:1/-1}
+.prep-label{font-size:0.72rem;font-weight:600;color:#555;margin-bottom:2px;display:block}
+.follow-up{font-size:0.78rem;padding:4px 0;display:flex;align-items:center;gap:6px}
+.follow-up.overdue{color:#e63946;font-weight:700}
+
+.card-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding-top:10px;border-top:1px solid #f0f0f0;margin-top:4px}
+.status-select{padding:4px 10px;border-radius:20px;font-size:0.75rem;font-weight:700;border:1.5px solid;cursor:pointer;background:white}
+.status-select.status-applied{color:#4361ee;border-color:#4361ee}
+.status-select.status-phone_screen{color:#7209b7;border-color:#7209b7}
+.status-select.status-interview{color:#f77f00;border-color:#f77f00}
+.status-select.status-assessment{color:#f4a261;border-color:#f4a261}
+.status-select.status-offer{color:#06d6a0;border-color:#06d6a0}
+.status-select.status-rejected{color:#e63946;border-color:#e63946}
+.status-select.status-withdrawn{color:#adb5bd;border-color:#adb5bd}
+
+.btn-sm{padding:5px 12px;font-size:0.75rem;border-radius:5px;border:1.5px solid;cursor:pointer;background:white;font-weight:600;transition:opacity 0.15s}
+.btn-sm:hover{opacity:0.75}
+.btn-del{border-color:#e63946;color:#e63946;margin-left:auto}
+.source-tag{display:inline-block;background:#e8f4fd;color:#0f3460;font-size:0.7rem;padding:2px 8px;border-radius:10px;font-weight:600}
+
+.empty{text-align:center;padding:48px 20px;color:#aaa}
+.empty .icon{font-size:3rem;margin-bottom:12px}
+.empty p{font-size:0.9rem}
+
+@media(max-width:640px){
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .form-grid{grid-template-columns:1fr}
+  .form-grid .full{grid-column:1}
+  .prep-row{grid-template-columns:1fr}
+  .prep-row .full{grid-column:1}
+}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <h1>🔧 Job Tracker</h1>
-  <span class="badge">PRO</span>
-</div>
+<header class="header">
+  <div class="header-left">
+    <h1>💼 UK Job Tracker</h1>
+    <span class="header-badge">PRO ✓</span>
+  </div>
+  <button class="btn-export" onclick="exportCSV()">⬇ Export CSV</button>
+</header>
 
 <div class="container">
-  <div class="stats" id="stats">
-    <div class="stat"><div class="value" id="stat-total">0</div><div class="label">Total Jobs</div></div>
-    <div class="stat"><div class="value" id="stat-active">0</div><div class="label">Active</div></div>
-    <div class="stat"><div class="value" id="stat-invoiced">£0</div><div class="label">Invoiced</div></div>
-    <div class="stat"><div class="value" id="stat-paid">£0</div><div class="label">Paid This Month</div></div>
+
+  <div class="stats">
+    <div class="stat"><div class="val" id="stat-total">0</div><div class="lbl">Applied</div></div>
+    <div class="stat"><div class="val" id="stat-active">0</div><div class="lbl">Active</div></div>
+    <div class="stat"><div class="val" id="stat-interviews">0</div><div class="lbl">Interviews</div></div>
+    <div class="stat"><div class="val" id="stat-offers">0</div><div class="lbl">Offers</div></div>
+    <div class="stat"><div class="val" id="stat-response">0%</div><div class="lbl">Response %</div></div>
   </div>
 
-  <div class="tabs">
-    <div class="main-tab active" onclick="switchPanel('jobs', this)">Jobs</div>
-    <div class="main-tab" onclick="switchPanel('settings', this)">Settings</div>
-  </div>
-
-  <div class="panel active" id="panel-jobs">
-    <div class="add-form">
-      <h2>Add Job</h2>
-      <div class="form-grid">
-        <input type="text" id="input-name" placeholder="Customer name" required>
-        <input type="tel" id="input-phone" placeholder="Phone (optional)">
-        <input type="text" id="input-address" placeholder="Address / postcode" class="full">
-        <input type="text" id="input-job" placeholder="Job description (e.g. fix leaking tap, bathroom retile)" class="full">
-        <input type="number" id="input-price" placeholder="Price £" min="0" step="0.01">
-        <input type="date" id="input-date">
-        <textarea id="input-notes" placeholder="Notes (optional)" class="full" rows="2"></textarea>
+  <div class="add-form">
+    <h2>Add Application</h2>
+    <div class="form-grid">
+      <div>
+        <label>Job Title *</label>
+        <input type="text" id="in-role" placeholder="e.g. Product Manager" required>
       </div>
-      <button class="btn btn-primary" onclick="addJob()">+ Add Job</button>
-    </div>
-
-    <div class="jobs-list">
-      <div class="jobs-header">
-        <h2>Jobs (<span id="job-count">0</span>)</h2>
-        <div class="filter-tabs">
-          <span class="tab active" onclick="setFilter('all', this)">All</span>
-          <span class="tab" onclick="setFilter('pending', this)">Pending</span>
-          <span class="tab" onclick="setFilter('done', this)">Done</span>
-          <span class="tab" onclick="setFilter('invoiced', this)">Invoiced</span>
-          <span class="tab" onclick="setFilter('paid', this)">Paid</span>
-        </div>
+      <div>
+        <label>Company *</label>
+        <input type="text" id="in-company" placeholder="e.g. Barclays, Spotify UK" required>
       </div>
-      <div id="jobs-container"></div>
-    </div>
-  </div>
-
-  <div class="panel" id="panel-settings">
-    <div class="settings-section">
-      <h3>Your Business Details</h3>
-      <div class="settings-grid">
-        <div>
-          <label>Trading name / Your name</label>
-          <input type="text" id="set-business" placeholder="e.g. Dave's Plumbing">
-        </div>
-        <div>
-          <label>Phone</label>
-          <input type="tel" id="set-phone" placeholder="e.g. 07911 123456">
-        </div>
-        <div class="full">
-          <label>Address</label>
-          <input type="text" id="set-address" placeholder="Your address">
-        </div>
-        <div>
-          <label>Email</label>
-          <input type="email" id="set-email" placeholder="you@example.com">
-        </div>
-        <div>
-          <label>VAT number (if applicable)</label>
-          <input type="text" id="set-vat" placeholder="GB 123 4567 89">
-        </div>
-        <div class="full">
-          <label>Invoice payment terms</label>
-          <input type="text" id="set-terms" placeholder="e.g. Payment due within 14 days. Bank transfer: Sort 12-34-56, Acc 87654321">
-        </div>
+      <div>
+        <label>Location</label>
+        <input type="text" id="in-location" placeholder="e.g. London, Remote">
       </div>
-      <button class="btn btn-primary" style="margin-top:14px;max-width:200px;" onclick="saveSettings()">Save Settings</button>
+      <div>
+        <label>Salary Range</label>
+        <input type="text" id="in-salary" placeholder="e.g. £60k–£75k">
+      </div>
+      <div>
+        <label>Job Source</label>
+        <select id="in-source">
+          <option value="LinkedIn">LinkedIn</option>
+          <option value="Reed">Reed</option>
+          <option value="Indeed UK">Indeed UK</option>
+          <option value="Totaljobs">Totaljobs</option>
+          <option value="Company Website">Company Website</option>
+          <option value="Recruiter">Recruiter</option>
+          <option value="Referral">Referral</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div>
+        <label>Date Applied</label>
+        <input type="date" id="in-date">
+      </div>
+      <div>
+        <label>Recruiter / Contact Name</label>
+        <input type="text" id="in-contact" placeholder="e.g. Sarah Jones">
+      </div>
+      <div>
+        <label>Contact Email</label>
+        <input type="email" id="in-contact-email" placeholder="e.g. s.jones@company.com">
+      </div>
+      <div>
+        <label>Follow-up Date</label>
+        <input type="date" id="in-followup">
+      </div>
+      <div>
+        <label>Job URL</label>
+        <input type="url" id="in-url" placeholder="https://...">
+      </div>
+      <div class="full">
+        <label>Notes</label>
+        <textarea id="in-notes" placeholder="Key skills required, reasons you're a good fit, anything relevant..."></textarea>
+      </div>
     </div>
-    <div class="settings-section">
-      <h3>Data</h3>
-      <p style="font-size:0.85rem;color:#666;margin-bottom:12px;">All data is stored in your browser only. Nothing is sent anywhere.</p>
-      <button class="btn" style="background:#e63946;color:white;max-width:200px;" onclick="clearAll()">Clear All Data</button>
-    </div>
+    <button class="btn-add" onclick="addApp()">+ Add Application</button>
   </div>
-</div>
 
-<!-- Invoice Modal -->
-<div class="modal-overlay" id="invoice-modal">
-  <div class="modal">
-    <div id="invoice-content"></div>
-    <div class="modal-actions">
-      <button class="btn" style="background:#f0f0f0;color:#333;" onclick="closeInvoice()">Close</button>
-      <button class="btn btn-primary" style="max-width:140px;" onclick="window.print()">Print / Save PDF</button>
+  <div class="list-header">
+    <h2>Applications</h2>
+    <div class="tabs" id="tabs">
+      <div class="tab active" onclick="setFilter('all',this)">All</div>
+      <div class="tab" onclick="setFilter('applied',this)">Applied</div>
+      <div class="tab" onclick="setFilter('interview',this)">Interview</div>
+      <div class="tab" onclick="setFilter('offer',this)">Offers</div>
+      <div class="tab" onclick="setFilter('rejected',this)">Rejected</div>
     </div>
   </div>
+
+  <div id="app-list"></div>
+
 </div>
 
 <script>
-const STORE_KEY = 'jt_jobs_v2';
-const SETTINGS_KEY = 'jt_settings_v1';
-let currentFilter = 'all';
-let invoiceCounter = parseInt(localStorage.getItem('jt_inv_counter') || '100');
+const KEY = 'jobtracker_apps';
+const STATUSES = {
+  applied:     {label:'Applied',       cls:'status-applied'},
+  phone_screen:{label:'Phone Screen',  cls:'status-phone_screen'},
+  interview:   {label:'Interview',     cls:'status-interview'},
+  assessment:  {label:'Assessment',   cls:'status-assessment'},
+  offer:       {label:'Offer 🎉',      cls:'status-offer'},
+  rejected:    {label:'Rejected',      cls:'status-rejected'},
+  withdrawn:   {label:'Withdrawn',     cls:'status-withdrawn'},
+};
 
-function loadJobs() {
-  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
-  catch(e) { return []; }
-}
-function saveJobs(jobs) { localStorage.setItem(STORE_KEY, JSON.stringify(jobs)); }
+let apps = JSON.parse(localStorage.getItem(KEY) || '[]');
+let activeFilter = 'all';
 
-function loadSettings() {
-  try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; }
-  catch(e) { return {}; }
-}
-function saveSettings() {
-  const s = {
-    business: document.getElementById('set-business').value.trim(),
-    phone: document.getElementById('set-phone').value.trim(),
-    address: document.getElementById('set-address').value.trim(),
-    email: document.getElementById('set-email').value.trim(),
-    vat: document.getElementById('set-vat').value.trim(),
-    terms: document.getElementById('set-terms').value.trim()
-  };
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
-  alert('Settings saved.');
-}
+function save(){ localStorage.setItem(KEY, JSON.stringify(apps)); }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2); }
 
-function addJob() {
-  const name = document.getElementById('input-name').value.trim();
-  if (!name) { document.getElementById('input-name').focus(); return; }
-  
-  const jobs = loadJobs();
-  const job = {
-    id: Date.now().toString(),
-    name,
-    phone: document.getElementById('input-phone').value.trim(),
-    address: document.getElementById('input-address').value.trim(),
-    description: document.getElementById('input-job').value.trim(),
-    price: parseFloat(document.getElementById('input-price').value) || 0,
-    date: document.getElementById('input-date').value || new Date().toISOString().split('T')[0],
-    notes: document.getElementById('input-notes').value.trim(),
-    status: 'pending',
-    created: new Date().toISOString()
-  };
-  
-  jobs.push(job);
-  saveJobs(jobs);
-  ['input-name','input-phone','input-address','input-job','input-price','input-notes'].forEach(id => {
-    document.getElementById(id).value = '';
+function addApp(){
+  const role    = document.getElementById('in-role').value.trim();
+  const company = document.getElementById('in-company').value.trim();
+  if(!role || !company){ alert('Job title and company are required.'); return; }
+
+  const today = new Date().toISOString().split('T')[0];
+  apps.unshift({
+    id:           uid(),
+    role, company,
+    location:     document.getElementById('in-location').value.trim(),
+    salary:       document.getElementById('in-salary').value.trim(),
+    source:       document.getElementById('in-source').value,
+    date:         document.getElementById('in-date').value || today,
+    contact:      document.getElementById('in-contact').value.trim(),
+    contactEmail: document.getElementById('in-contact-email').value.trim(),
+    followup:     document.getElementById('in-followup').value,
+    url:          document.getElementById('in-url').value.trim(),
+    notes:        document.getElementById('in-notes').value.trim(),
+    status:       'applied',
+    // Pro fields
+    prepNotes:    '',
+    prepQuestions:'',
+    companyResearch:'',
+    offerInitial: '',
+    offerCounter: '',
+    offerAccepted:'',
   });
-  document.getElementById('input-date').value = new Date().toISOString().split('T')[0];
+  save();
+
+  ['in-role','in-company','in-location','in-salary','in-notes','in-contact','in-contact-email','in-followup','in-url'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  document.getElementById('in-source').value='LinkedIn';
+  document.getElementById('in-date').value=new Date().toISOString().split('T')[0];
   render();
 }
 
-function updateStatus(id, status) {
-  const jobs = loadJobs();
-  const job = jobs.find(j => j.id === id);
-  if (job) { job.status = status; saveJobs(jobs); render(); }
+function updateStatus(id, val){
+  const a = apps.find(x=>x.id===id); if(a){ a.status=val; save(); render(); }
 }
 
-function deleteJob(id) {
-  if (!confirm('Delete this job?')) return;
-  saveJobs(loadJobs().filter(j => j.id !== id));
-  render();
+function updateField(id, field, val){
+  const a = apps.find(x=>x.id===id); if(a){ a[field]=val; save(); }
 }
 
-function printInvoice(id) {
-  const job = loadJobs().find(j => j.id === id);
-  if (!job) return;
-  const s = loadSettings();
-  
-  invoiceCounter++;
-  localStorage.setItem('jt_inv_counter', invoiceCounter);
-  
-  const invNum = `INV-${invoiceCounter}`;
-  const today = new Date().toLocaleDateString('en-GB');
-  const jobDate = job.date ? new Date(job.date).toLocaleDateString('en-GB') : today;
-  const priceFormatted = '£' + (job.price || 0).toFixed(2);
-  
-  document.getElementById('invoice-content').innerHTML = `
-    <div class="invoice">
-      <div class="invoice-header">
-        <div class="invoice-from">
-          <h2>${escHtml(s.business || 'Your Trading Name')}</h2>
-          ${s.address ? `<p>${escHtml(s.address)}</p>` : ''}
-          ${s.phone ? `<p>${escHtml(s.phone)}</p>` : ''}
-          ${s.email ? `<p>${escHtml(s.email)}</p>` : ''}
-          ${s.vat ? `<p>VAT: ${escHtml(s.vat)}</p>` : ''}
-        </div>
-        <div class="invoice-meta">
-          <div class="inv-num">${invNum}</div>
-          <div class="inv-date">Date: ${today}</div>
-        </div>
-      </div>
-      <div class="invoice-to">
-        <h3>Invoice To</h3>
-        <p><strong>${escHtml(job.name)}</strong></p>
-        ${job.address ? `<p>${escHtml(job.address)}</p>` : ''}
-        ${job.phone ? `<p>${escHtml(job.phone)}</p>` : ''}
-      </div>
-      <table class="invoice-table">
-        <thead><tr><th>Description</th><th>Date</th><th class="price">Amount</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>${escHtml(job.description || 'Labour and materials')}</td>
-            <td>${jobDate}</td>
-            <td class="price">${priceFormatted}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="invoice-total">
-        <div class="total-line">Total: ${priceFormatted}</div>
-      </div>
-      ${s.terms ? `<div class="invoice-notes">${escHtml(s.terms)}</div>` : ''}
-    </div>
-  `;
-  document.getElementById('invoice-modal').classList.add('show');
+function deleteApp(id){
+  if(!confirm('Remove this application?')) return;
+  apps = apps.filter(x=>x.id!==id); save(); render();
 }
 
-function closeInvoice() {
-  document.getElementById('invoice-modal').classList.remove('show');
+function setFilter(f, el){
+  activeFilter = f;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active'); render();
 }
 
-function setFilter(f, el) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-tabs .tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  render();
+function fmtDate(d){
+  if(!d) return '';
+  const [y,m,day] = d.split('-'); return `${day}/${m}/${y}`;
 }
 
-function switchPanel(name, el) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('panel-' + name).classList.add('active');
-  el.classList.add('active');
-  
-  if (name === 'settings') {
-    const s = loadSettings();
-    document.getElementById('set-business').value = s.business || '';
-    document.getElementById('set-phone').value = s.phone || '';
-    document.getElementById('set-address').value = s.address || '';
-    document.getElementById('set-email').value = s.email || '';
-    document.getElementById('set-vat').value = s.vat || '';
-    document.getElementById('set-terms').value = s.terms || '';
-  }
+function isOverdue(d){
+  if(!d) return false;
+  return new Date(d) < new Date(new Date().toDateString());
 }
 
-function clearAll() {
-  if (!confirm('This will delete ALL jobs and settings. Are you sure?')) return;
-  localStorage.removeItem(STORE_KEY);
-  localStorage.removeItem(SETTINGS_KEY);
-  localStorage.removeItem('jt_inv_counter');
-  render();
-  alert('All data cleared.');
+function exportCSV(){
+  const headers = ['Role','Company','Location','Salary','Source','Date Applied','Status','Contact','Contact Email','Follow-up','Notes','Offer Initial','Offer Counter','Offer Accepted'];
+  const rows = apps.map(a=>[
+    a.role,a.company,a.location,a.salary,a.source,a.date,
+    STATUSES[a.status]?.label||a.status,
+    a.contact,a.contactEmail,a.followup,
+    a.notes,a.offerInitial,a.offerCounter,a.offerAccepted
+  ].map(v=>`"${String(v||'').replace(/"/g,'""')}"`));
+  const csv = [headers, ...rows].map(r=>r.join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'uk-job-applications.csv';
+  a.click();
 }
 
-function fmtPrice(p) { return '£' + (p || 0).toFixed(2); }
-function fmtDate(d) {
-  if (!d) return '';
-  const parts = d.split('-');
-  return `${parts[2]}/${parts[1]}/${parts[0]}`;
-}
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function togglePrep(id){
+  const el = document.getElementById('prep-'+id);
+  if(el) el.classList.toggle('collapsed');
 }
 
-function render() {
-  const jobs = loadJobs();
-  const now = new Date();
-  
+function render(){
   // Stats
-  document.getElementById('stat-total').textContent = jobs.length;
-  document.getElementById('stat-active').textContent = jobs.filter(j => j.status === 'pending' || j.status === 'done').length;
-  document.getElementById('stat-invoiced').textContent = fmtPrice(jobs.filter(j => j.status === 'invoiced').reduce((s,j) => s + (j.price||0), 0));
-  document.getElementById('stat-paid').textContent = fmtPrice(jobs.filter(j => {
-    if (j.status !== 'paid') return false;
-    const d = new Date(j.created);
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-  }).reduce((s,j) => s + (j.price||0), 0));
-  
-  let filtered = currentFilter === 'all' ? jobs : jobs.filter(j => j.status === currentFilter);
-  document.getElementById('job-count').textContent = jobs.length;
-  
-  const container = document.getElementById('jobs-container');
-  if (filtered.length === 0) {
-    container.innerHTML = `<div class="empty"><div class="icon">📋</div><p>${jobs.length === 0 ? 'No jobs yet.' : 'No jobs matching filter.'}</p></div>`;
+  const total = apps.length;
+  const active = apps.filter(a=>!['rejected','withdrawn'].includes(a.status)).length;
+  const interviews = apps.filter(a=>['interview','assessment','phone_screen'].includes(a.status)).length;
+  const offers = apps.filter(a=>a.status==='offer').length;
+  const responded = apps.filter(a=>a.status!=='applied').length;
+  const responseRate = total>0 ? Math.round(responded/total*100) : 0;
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-active').textContent = active;
+  document.getElementById('stat-interviews').textContent = interviews;
+  document.getElementById('stat-offers').textContent = offers;
+  document.getElementById('stat-response').textContent = responseRate+'%';
+
+  // Filter
+  let filtered = apps;
+  if(activeFilter==='applied')   filtered = apps.filter(a=>a.status==='applied');
+  if(activeFilter==='interview') filtered = apps.filter(a=>['phone_screen','interview','assessment'].includes(a.status));
+  if(activeFilter==='offer')     filtered = apps.filter(a=>a.status==='offer');
+  if(activeFilter==='rejected')  filtered = apps.filter(a=>['rejected','withdrawn'].includes(a.status));
+
+  const list = document.getElementById('app-list');
+
+  if(filtered.length===0){
+    list.innerHTML = `<div class="empty"><div class="icon">📋</div><p>${
+      activeFilter==='all' ? 'No applications yet. Add your first one above.' : 'No applications in this category.'
+    }</p></div>`;
     return;
   }
-  
-  filtered = [...filtered].sort((a,b) => b.created.localeCompare(a.created));
-  container.innerHTML = filtered.map(job => {
-    const badgeText = {pending:'Pending',done:'Done',invoiced:'Invoiced',paid:'Paid'}[job.status] || job.status;
-    const actions = [];
-    if (job.status === 'pending') actions.push(`<button class="btn-sm btn-done" onclick="updateStatus('${job.id}','done')">Mark Done</button>`);
-    if (job.status === 'done') {
-      actions.push(`<button class="btn-sm btn-invoice" onclick="updateStatus('${job.id}','invoiced')">Invoice Sent</button>`);
-      actions.push(`<button class="btn-sm btn-print" onclick="printInvoice('${job.id}')">Print Invoice</button>`);
-    }
-    if (job.status === 'invoiced') {
-      actions.push(`<button class="btn-sm btn-paid" onclick="updateStatus('${job.id}','paid')">Mark Paid</button>`);
-      actions.push(`<button class="btn-sm btn-print" onclick="printInvoice('${job.id}')">Print Invoice</button>`);
-    }
-    actions.push(`<button class="btn-sm btn-delete" onclick="deleteJob('${job.id}')">Delete</button>`);
-    
-    return `<div class="job-card ${job.status}">
-      <div class="job-top">
-        <div class="job-name">${escHtml(job.name)}${job.phone ? ` <small style="color:#aaa;font-weight:400">(${escHtml(job.phone)})</small>` : ''}</div>
-        <div class="job-price">${fmtPrice(job.price)}</div>
+
+  list.innerHTML = filtered.map(a=>{
+    const opts = Object.entries(STATUSES).map(([v,s])=>
+      `<option value="${v}"${a.status===v?' selected':''}>${s.label}</option>`
+    ).join('');
+    const overdue = isOverdue(a.followup);
+    return `
+<div class="app-card status-${a.status}">
+  <div class="card-main">
+    <div class="card-top">
+      <div>
+        <div class="card-role">${esc(a.role)}${a.url?` <a href="${esc(a.url)}" target="_blank" style="font-size:0.75rem;color:#0f3460;text-decoration:none">↗</a>`:''}</div>
+        <div class="card-company">${esc(a.company)}${a.location?' · '+esc(a.location):''}</div>
       </div>
-      <div class="job-meta">
-        ${job.address ? escHtml(job.address) + ' · ' : ''}${fmtDate(job.date)}
-        &nbsp;<span class="status-badge badge-${job.status}">${badgeText}</span>
+    </div>
+    <div class="card-meta">
+      ${a.date?`<span>📅 ${fmtDate(a.date)}</span>`:''}
+      ${a.salary?`<span>💷 ${esc(a.salary)}</span>`:''}
+      <span><span class="source-tag">${esc(a.source)}</span></span>
+      ${a.followup?`<span class="${overdue?'follow-up overdue':'follow-up'}">🔔 Follow-up: ${fmtDate(a.followup)}${overdue?' ⚠️ Overdue':''}</span>`:''}
+    </div>
+    ${(a.contact||a.contactEmail)?`
+    <div class="card-contact">
+      ${a.contact?`<span>👤 ${esc(a.contact)}</span>`:''}
+      ${a.contactEmail?`<a href="mailto:${esc(a.contactEmail)}">✉ ${esc(a.contactEmail)}</a>`:''}
+    </div>`:''}
+    ${a.notes?`<div class="card-notes">${esc(a.notes)}</div>`:''}
+
+    <div class="interview-prep collapsed" id="prep-${a.id}">
+      <h4 onclick="togglePrep('${a.id}')">Interview Prep <span class="toggle-icon">▼</span></h4>
+      <div class="prep-body">
+        <div class="prep-row">
+          <div>
+            <label class="prep-label">Preparation Notes</label>
+            <textarea style="font-size:0.8rem;min-height:60px" placeholder="Key points to cover, your STAR examples..." oninput="updateField('${a.id}','prepNotes',this.value)">${esc(a.prepNotes||'')}</textarea>
+          </div>
+          <div>
+            <label class="prep-label">Questions to Ask</label>
+            <textarea style="font-size:0.8rem;min-height:60px" placeholder="Questions for hiring manager, team, culture..." oninput="updateField('${a.id}','prepQuestions',this.value)">${esc(a.prepQuestions||'')}</textarea>
+          </div>
+          <div class="full">
+            <label class="prep-label">Company Research</label>
+            <textarea style="font-size:0.8rem;min-height:52px" placeholder="Recent news, products, competitors, values..." oninput="updateField('${a.id}','companyResearch',this.value)">${esc(a.companyResearch||'')}</textarea>
+          </div>
+        </div>
       </div>
-      ${job.description ? `<div class="job-desc">${escHtml(job.description)}</div>` : ''}
-      ${job.notes ? `<div class="job-desc" style="color:#aaa;font-style:italic;font-size:0.82rem">${escHtml(job.notes)}</div>` : ''}
-      <div class="job-actions">${actions.join('')}</div>
-    </div>`;
+    </div>
+
+    <div class="salary-track">
+      <h4>💷 Salary Negotiation</h4>
+      <div class="salary-row">
+        <div class="salary-input-group">
+          <label>Initial Offer</label>
+          <input type="text" style="font-size:0.82rem;padding:6px 10px" value="${esc(a.offerInitial||'')}" placeholder="£55,000" oninput="updateField('${a.id}','offerInitial',this.value)">
+        </div>
+        <div class="salary-input-group">
+          <label>Counter Offer</label>
+          <input type="text" style="font-size:0.82rem;padding:6px 10px" value="${esc(a.offerCounter||'')}" placeholder="£62,000" oninput="updateField('${a.id}','offerCounter',this.value)">
+        </div>
+        <div class="salary-input-group">
+          <label>Accepted Salary</label>
+          <input type="text" style="font-size:0.82rem;padding:6px 10px" value="${esc(a.offerAccepted||'')}" placeholder="£59,000" oninput="updateField('${a.id}','offerAccepted',this.value)">
+        </div>
+      </div>
+    </div>
+
+    <div class="card-actions">
+      <select class="status-select status-${a.status}" onchange="updateStatus('${a.id}',this.value)">${opts}</select>
+      <button class="btn-sm btn-del" onclick="deleteApp('${a.id}')">Delete</button>
+    </div>
+  </div>
+</div>`;
   }).join('');
 }
 
-document.getElementById('input-date').value = new Date().toISOString().split('T')[0];
+function esc(s){
+  if(!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+document.getElementById('in-date').value = new Date().toISOString().split('T')[0];
 render();
 </script>
-
 </body>
 </html>
