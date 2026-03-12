@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You - UK Job Tracker Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 3rem;
+            border-radius: 1rem;
+            max-width: 600px;
+        }
+
+        .checkmark {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: bounce 0.6s;
+        }
+
+        @keyframes bounce {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #f59e0b 0%, #fcd34d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .features {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+
+        .features h3 {
+            color: #f59e0b;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .features li {
+            list-style: none;
+            padding: 0.5rem 0;
+            color: #cbd5e1;
+        }
+
+        .features li:before {
+            content: "✓ ";
+            color: #22c55e;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #0f172a;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(245, 158, 11, 0.4);
+        }
+
+        .instructions {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+
+        .instructions h3 {
+            color: #60a5fa;
+            margin-bottom: 1rem;
+        }
+
+        .instructions ol {
+            margin-left: 1.5rem;
+            color: #cbd5e1;
+        }
+
+        .instructions li {
+            margin-bottom: 0.75rem;
+        }
+
+        .support {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .support a {
+            color: #f59e0b;
+            text-decoration: none;
+        }
+
+        .support a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="checkmark">🎉</div>
+        <h1>Thank You!</h1>
+        <p>Your payment was successful. Welcome to UK Job Tracker Pro!</p>
+
+        <div class="features">
+            <h3>What You Get</h3>
+            <ul>
+                <li>Full-featured job application tracker</li>
+                <li>Track interviews, deadlines, and follow-ups</li>
+                <li>Dashboard with success metrics</li>
+                <li>Import/export to CSV for backups</li>
+                <li>Dark & light mode themes</li>
+                <li>Works 100% offline in your browser</li>
+            </ul>
+        </div>
+
+        <a href="index-paid.html" class="cta-button">↪️ Open Your Tracker Now</a>
+
+        <div class="instructions">
+            <h3>Getting Started</h3>
+            <ol>
+                <li><strong>Bookmark this page:</strong> Press Ctrl+D (or Cmd+D) to save the tracker to your browser</li>
+                <li><strong>Add applications:</strong> Click "+ Add New Application" to start tracking</li>
+                <li><strong>Set reminders:</strong> Use "Next Action" and "Due Date" to track follow-ups</li>
+                <li><strong>Monitor progress:</strong> Watch your dashboard stats update in real-time</li>
+                <li><strong>Backup data:</strong> Export to CSV regularly to keep your data safe</li>
+            </ol>
+        </div>
+
+        <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); padding: 1rem; border-radius: 0.5rem; margin: 1.5rem 0;">
+            <p style="color: #86efac;">
+                <strong>💡 Pro Tip:</strong> The data is stored in your browser's localStorage. If you clear your browser data, you'll lose it! Use CSV export to backup.
+            </p>
+        </div>
+
+        <div class="support">
+            <p>Questions or need help? Email <a href="mailto:clawgenesis@gmail.com">clawgenesis@gmail.com</a></p>
+            <p>Not satisfied? Request a refund within 7 days for a full refund.</p>
+        </div>
+    </div>
+</body>
+</html>

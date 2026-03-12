@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK Job Tracker Pro - Application Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #e2e8f0;
+            --text-secondary: #cbd5e1;
+            --accent: #f59e0b;
+            --accent-dark: #d97706;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        body.light-mode {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #f1f5f9;
+            --bg-tertiary: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1.5rem;
+            border-radius: 0.5rem;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .header-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        button {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: var(--accent-dark);
+        }
+        
+        button.secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        button.secondary:hover {
+            background: var(--bg-tertiary);
+            opacity: 0.8;
+        }
+        
+        .toggle-switch {
+            width: 50px;
+            height: 26px;
+            background: var(--bg-tertiary);
+            border-radius: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 2px;
+            transition: background 0.2s;
+        }
+        
+        .toggle-switch.active {
+            background: var(--accent);
+        }
+        
+        .toggle-slider {
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+        
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(24px);
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .controls {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .control-group label {
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        input[type="text"],
+        input[type="date"],
+        select {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            font-family: inherit;
+        }
+        
+        input[type="text"]::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            background: var(--bg-secondary);
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        
+        th {
+            background: var(--bg-tertiary);
+            color: var(--accent);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--accent);
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        th:hover {
+            background: var(--bg-primary);
+        }
+        
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        tr:hover {
+            background: rgba(245, 158, 11, 0.05);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        
+        .status-applied { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .status-screen { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+        .status-interview1 { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+        .status-interview2 { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+        .status-assessment { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; }
+        .status-offer { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+        .status-rejected { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        .status-withdrawn { background: rgba(107, 114, 128, 0.2); color: #d1d5db; }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-small {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.85rem;
+        }
+        
+        .btn-edit { background: var(--info); }
+        .btn-delete { background: var(--danger); }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.5rem;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0.375rem;
+            font-family: inherit;
+        }
+        
+        .form-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-overdue {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+        }
+        
+        .overdue {
+            color: var(--danger);
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+            
+            td, th {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <div class="logo">📋 Job Tracker Pro</div>
+            </div>
+            <div class="header-right">
+                <button class="secondary" onclick="exportData()">📥 Export CSV</button>
+                <button class="secondary" onclick="showImportModal()">📤 Import CSV</button>
+                <button class="secondary" onclick="printData()">🖨️ Print</button>
+                <div class="toggle-switch" onclick="toggleDarkMode(this)">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <div class="stat-card">
+                <div class="stat-label">Total Applications</div>
+                <div class="stat-value" id="stat-total">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Active / Pending</div>
+                <div class="stat-value" id="stat-active">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Interviews</div>
+                <div class="stat-value" id="stat-interviews">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Offers</div>
+                <div class="stat-value" id="stat-offers">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Rejection Rate</div>
+                <div class="stat-value" id="stat-rejection">0%</div>
+            </div>
+        </div>
+
+        <div id="overdue-alert" class="alert alert-overdue" style="display:none;">
+            ⚠️ You have overdue follow-ups! Check the table for highlighted rows.
+        </div>
+
+        <button onclick="showAddModal()" style="margin-bottom: 1.5rem;">+ Add New Application</button>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>Filter by Status</label>
+                <select id="filter-status" onchange="applyFilters()">
+                    <option value="">All Statuses</option>
+                    <option value="Applied">Applied</option>
+                    <option value="Phone Screen">Phone Screen</option>
+                    <option value="Interview 1">Interview 1</option>
+                    <option value="Interview 2">Interview 2</option>
+                    <option value="Assessment">Assessment</option>
+                    <option value="Offer">Offer</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="Withdrawn">Withdrawn</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Filter by Source</label>
+                <select id="filter-source" onchange="applyFilters()">
+                    <option value="">All Sources</option>
+                    <option value="LinkedIn">LinkedIn</option>
+                    <option value="Indeed">Indeed</option>
+                    <option value="Direct">Direct</option>
+                    <option value="Recruiter">Recruiter</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Search Company/Role</label>
+                <input type="text" id="search-input" placeholder="Type to search..." onkeyup="applyFilters()">
+            </div>
+            <div class="control-group">
+                <label>Date Range</label>
+                <input type="date" id="filter-from" onchange="applyFilters()">
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">Company ↕️</th>
+                        <th onclick="sortTable(1)">Role ↕️</th>
+                        <th>Location</th>
+                        <th onclick="sortTable(3)">Date Applied ↕️</th>
+                        <th>Source</th>
+                        <th onclick="sortTable(5)">Status ↕️</th>
+                        <th>Salary</th>
+                        <th>Contact</th>
+                        <th>Next Action</th>
+                        <th>Due</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modal-title">Add New Application</div>
+            <form id="application-form" onsubmit="saveApplication(event)">
+                <div class="form-group">
+                    <label>Company Name *</label>
+                    <input type="text" id="company" required>
+                </div>
+                <div class="form-group">
+                    <label>Job Title *</label>
+                    <input type="text" id="role" required>
+                </div>
+                <div class="form-group">
+                    <label>Location *</label>
+                    <input type="text" id="location" placeholder="e.g., London, Remote">
+                </div>
+                <div class="form-group">
+                    <label>Date Applied *</label>
+                    <input type="date" id="date-applied" required>
+                </div>
+                <div class="form-group">
+                    <label>Source *</label>
+                    <select id="source" required>
+                        <option>LinkedIn</option>
+                        <option>Indeed</option>
+                        <option>Direct</option>
+                        <option>Recruiter</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status *</label>
+                    <select id="status" required>
+                        <option>Applied</option>
+                        <option>Phone Screen</option>
+                        <option>Interview 1</option>
+                        <option>Interview 2</option>
+                        <option>Assessment</option>
+                        <option>Offer</option>
+                        <option>Rejected</option>
+                        <option>Withdrawn</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Salary Range (£)</label>
+                    <input type="text" id="salary" placeholder="e.g., 40,000-50,000">
+                </div>
+                <div class="form-group">
+                    <label>Contact Name</label>
+                    <input type="text" id="contact-name">
+                </div>
+                <div class="form-group">
+                    <label>Contact Email</label>
+                    <input type="text" id="contact-email">
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="notes" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Next Action</label>
+                    <input type="text" id="next-action" placeholder="e.g., Follow up with recruiter">
+                </div>
+                <div class="form-group">
+                    <label>Due Date</label>
+                    <input type="date" id="due-date">
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="import-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Import from CSV</div>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Select a CSV file exported from this tracker. Columns must match: Company, Role, Location, Date Applied, Source, Status, Salary, Contact Name, Contact Email, Notes, Next Action, Due Date</p>
+            <input type="file" id="csv-file" accept=".csv" style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;">
+            <div class="form-buttons">
+                <button class="secondary" onclick="closeImportModal()">Cancel</button>
+                <button onclick="importCSV()">Import</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let applications = [];
+        let editingIndex = null;
+        let sortColumn = 0;
+        let sortAscending = true;
+
+        function loadData() {
+            const saved = localStorage.getItem('job_tracker_data');
+            applications = saved ? JSON.parse(saved) : [];
+            renderTable();
+            updateStats();
+        }
+
+        function saveData() {
+            localStorage.setItem('job_tracker_data', JSON.stringify(applications));
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            
+            applications.forEach((app, idx) => {
+                const row = document.createElement('tr');
+                const today = new Date().toISOString().split('T')[0];
+                const isOverdue = app['due-date'] && app['due-date'] < today;
+                
+                if (isOverdue) row.style.background = 'rgba(239, 68, 68, 0.1)';
+                
+                const statusClass = `status-${app.status.toLowerCase().replace(/\s+/g, '')}`;
+                const dueStr = app['due-date'] ? (isOverdue ? `<span class="overdue">⚠️ ${app['due-date']}</span>` : app['due-date']) : '-';
+                
+                row.innerHTML = `
+                    <td><strong>${app.company}</strong></td>
+                    <td>${app.role}</td>
+                    <td>${app.location}</td>
+                    <td>${app['date-applied']}</td>
+                    <td>${app.source}</td>
+                    <td><span class="status-badge ${statusClass}">${app.status}</span></td>
+                    <td>£${app.salary || '-'}</td>
+                    <td>${app['contact-name'] ? `${app['contact-name']}<br/><small>${app['contact-email'] || ''}</small>` : '-'}</td>
+                    <td>${app['next-action'] || '-'}</td>
+                    <td>${dueStr}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-small btn-edit" onclick="editApplication(${idx})">Edit</button>
+                            <button class="btn-small btn-delete" onclick="deleteApplication(${idx})">Delete</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateStats() {
+            const total = applications.length;
+            const active = applications.filter(a => !['Offer', 'Rejected', 'Withdrawn'].includes(a.status)).length;
+            const interviews = applications.filter(a => a.status.includes('Interview') || a.status === 'Assessment').length;
+            const offers = applications.filter(a => a.status === 'Offer').length;
+            const rejected = applications.filter(a => a.status === 'Rejected').length;
+            const rejection = total ? Math.round(rejected / total * 100) : 0;
+            
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-active').textContent = active;
+            document.getElementById('stat-interviews').textContent = interviews;
+            document.getElementById('stat-offers').textContent = offers;
+            document.getElementById('stat-rejection').textContent = rejection + '%';
+
+            const today = new Date().toISOString().split('T')[0];
+            const hasOverdue = applications.some(a => a['due-date'] && a['due-date'] < today);
+            document.getElementById('overdue-alert').style.display = hasOverdue ? 'block' : 'none';
+        }
+
+        function showAddModal() {
+            editingIndex = null;
+            document.getElementById('modal-title').textContent = 'Add New Application';
+            document.getElementById('application-form').reset();
+            document.getElementById('date-applied').valueAsDate = new Date();
+            document.getElementById('modal').classList.add('show');
+        }
+
+        function editApplication(idx) {
+            editingIndex = idx;
+            const app = applications[idx];
+            document.getElementById('modal-title').textContent = 'Edit Application';
+            Object.keys(app).forEach(key => {
+                const el = document.getElementById(key);
+                if (el) el.value = app[key];
+            });
+            document.getElementById('modal').classList.add('show');
+        }
+
+        function deleteApplication(idx) {
+            if (confirm('Delete this application?')) {
+                applications.splice(idx, 1);
+                saveData();
+                renderTable();
+                updateStats();
+            }
+        }
+
+        function saveApplication(e) {
+            e.preventDefault();
+            const formData = {
+                company: document.getElementById('company').value,
+                role: document.getElementById('role').value,
+                location: document.getElementById('location').value,
+                'date-applied': document.getElementById('date-applied').value,
+                source: document.getElementById('source').value,
+                status: document.getElementById('status').value,
+                salary: document.getElementById('salary').value,
+                'contact-name': document.getElementById('contact-name').value,
+                'contact-email': document.getElementById('contact-email').value,
+                notes: document.getElementById('notes').value,
+                'next-action': document.getElementById('next-action').value,
+                'due-date': document.getElementById('due-date').value,
+            };
+
+            if (editingIndex !== null) {
+                applications[editingIndex] = formData;
+            } else {
+                applications.push(formData);
+            }
+            
+            saveData();
+            closeModal();
+            renderTable();
+            updateStats();
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+
+        function showImportModal() {
+            document.getElementById('import-modal').classList.add('show');
+        }
+
+        function closeImportModal() {
+            document.getElementById('import-modal').classList.remove('show');
+        }
+
+        function exportData() {
+            if (applications.length === 0) {
+                alert('No applications to export');
+                return;
+            }
+
+            const headers = ['Company', 'Role', 'Location', 'Date Applied', 'Source', 'Status', 'Salary', 'Contact Name', 'Contact Email', 'Notes', 'Next Action', 'Due Date'];
+            const rows = applications.map(app => [
+                app.company, app.role, app.location, app['date-applied'], app.source,
+                app.status, app.salary, app['contact-name'], app['contact-email'], app.notes, app['next-action'], app['due-date']
+            ]);
+
+            let csv = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csv += row.map(cell => `"${(cell || '').replace(/"/g, '""')}"` ).join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `job-tracker-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        function importCSV() {
+            const file = document.getElementById('csv-file').files[0];
+            if (!file) {
+                alert('Please select a file');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const csv = e.target.result;
+                const lines = csv.split('\n').filter(l => l.trim());
+                if (lines.length < 2) {
+                    alert('Invalid CSV format');
+                    return;
+                }
+
+                const headers = lines[0].split(',').map(h => h.trim().replace(/^"(.*)"$/, '$1'));
+                for (let i = 1; i < lines.length; i++) {
+                    const values = lines[i].split(',').map(v => v.trim().replace(/^"(.*)"$/, '$1'));
+                    if (values.length === headers.length) {
+                        const app = {};
+                        headers.forEach((h, idx) => {
+                            const key = h.toLowerCase().replace(/\s+/g, '-');
+                            app[key] = values[idx];
+                        });
+                        applications.push(app);
+                    }
+                }
+
+                saveData();
+                closeImportModal();
+                renderTable();
+                updateStats();
+                alert(`Imported ${applications.length} applications`);
+            };
+            reader.readAsText(file);
+        }
+
+        function sortTable(col) {
+            if (sortColumn === col) {
+                sortAscending = !sortAscending;
+            } else {
+                sortColumn = col;
+                sortAscending = true;
+            }
+
+            const keys = ['company', 'role', 'location', 'date-applied', 'source', 'status', 'salary', 'contact-name', 'contact-email', 'notes', 'next-action', 'due-date'];
+            const key = keys[col];
+
+            applications.sort((a, b) => {
+                let aVal = a[key] || '';
+                let bVal = b[key] || '';
+                if (col === 3) { // date sorting
+                    aVal = new Date(aVal).getTime();
+                    bVal = new Date(bVal).getTime();
+                }
+                return sortAscending ? aVal > bVal ? 1 : -1 : aVal < bVal ? 1 : -1;
+            });
+
+            saveData();
+            renderTable();
+        }
+
+        function applyFilters() {
+            const statusFilter = document.getElementById('filter-status').value;
+            const sourceFilter = document.getElementById('filter-source').value;
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const fromDate = document.getElementById('filter-from').value;
+
+            let filtered = applications.filter(app => {
+                if (statusFilter && app.status !== statusFilter) return false;
+                if (sourceFilter && app.source !== sourceFilter) return false;
+                if (searchTerm && !app.company.toLowerCase().includes(searchTerm) && !app.role.toLowerCase().includes(searchTerm)) return false;
+                if (fromDate && app['date-applied'] < fromDate) return false;
+                return true;
+            });
+
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            
+            filtered.forEach((app, idx) => {
+                const realIdx = applications.indexOf(app);
+                const row = document.createElement('tr');
+                const today = new Date().toISOString().split('T')[0];
+                const isOverdue = app['due-date'] && app['due-date'] < today;
+                
+                if (isOverdue) row.style.background = 'rgba(239, 68, 68, 0.1)';
+                
+                const statusClass = `status-${app.status.toLowerCase().replace(/\s+/g, '')}`;
+                const dueStr = app['due-date'] ? (isOverdue ? `<span class="overdue">⚠️ ${app['due-date']}</span>` : app['due-date']) : '-';
+                
+                row.innerHTML = `
+                    <td><strong>${app.company}</strong></td>
+                    <td>${app.role}</td>
+                    <td>${app.location}</td>
+                    <td>${app['date-applied']}</td>
+                    <td>${app.source}</td>
+                    <td><span class="status-badge ${statusClass}">${app.status}</span></td>
+                    <td>£${app.salary || '-'}</td>
+                    <td>${app['contact-name'] ? `${app['contact-name']}<br/><small>${app['contact-email'] || ''}</small>` : '-'}</td>
+                    <td>${app['next-action'] || '-'}</td>
+                    <td>${dueStr}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-small btn-edit" onclick="editApplication(${realIdx})">Edit</button>
+                            <button class="btn-small btn-delete" onclick="deleteApplication(${realIdx})">Delete</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function toggleDarkMode(el) {
+            el.classList.toggle('active');
+            document.body.classList.toggle('light-mode');
+            localStorage.setItem('dark-mode', !document.body.classList.contains('light-mode'));
+        }
+
+        function printData() {
+            window.print();
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            loadData();
+            if (localStorage.getItem('dark-mode') === 'false') {
+                document.body.classList.add('light-mode');
+                document.querySelector('.toggle-switch').classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
